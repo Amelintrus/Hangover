@@ -1,23 +1,20 @@
 # Hangover
-This is where she makes a mod.
+Adds alcoholism and hangovers to Geometry Dash.
 
-<img src="logo.png" width="150" alt="the mod's logo" />
+Spiritual successor to my previous mod, Drunk Mode (which is now outdated)
 
-*Update logo.png to change your mod's icon (please)*
+Check the mod config for settings on how drunk you want to get, and if you want it enabled or not.
+## Roadmap (stuff I wanna add in the future)
+- funky visuals to go along with the speed/audio change while being drunk
+- a menu where you can go to a bar and take shots to steadily increase how drunk you are
+  - also allow you to talk to some characters like the gatekeeper and demon guardian, where dialogue changes based on how drunk you are
+- if you're too drunk, you get a hangover that lasts like 10 minutes maybe
+  - everything has a greyscale filter
+  - game is consistently slowed down to like 0.5
+  - weird filters that make things look wobbly and weird
+---
 
-## Getting started
-We recommend heading over to [the getting started section on our docs](https://docs.geode-sdk.org/getting-started/) for useful info on what to do next.
+I am only able to test this on Windows; if any issues arise on other platforms (MacOS, Linux, Android, iOS), I might not be able to reproduce and fix the issue
 
-## Build instructions
-For more info, see [our docs](https://docs.geode-sdk.org/getting-started/create-mod#build)
-```sh
-# Assuming you have the Geode CLI set up already
-geode build
-```
-
-# Resources
-* [Geode SDK Documentation](https://docs.geode-sdk.org/)
-* [Geode SDK Source Code](https://github.com/geode-sdk/geode/)
-* [Geode CLI](https://github.com/geode-sdk/cli)
-* [Bindings](https://github.com/geode-sdk/bindings/)
-* [Dev Tools](https://github.com/geode-sdk/DevTools)
+---
+![john geometry is at it again](logo.png)

@@ -1,100 +1,62 @@
-/**
- * Include the Geode headers.
- */
 #include <Geode/Geode.hpp>
+#include <Geode/modify/CCScheduler.hpp>
+#include <cstdlib>
+#include <ctime>
 
-/**
- * Brings cocos2d and all Geode namespaces to the current scope.
- */
 using namespace geode::prelude;
 
-/**
- * `$modify` lets you extend and modify GD's classes.
- * To hook a function in Geode, simply $modify the class
- * and write a new function definition with the signature of
- * the function you want to hook.
- *
- * Here we use the overloaded `$modify` macro to set our own class name,
- * so that we can use it for button callbacks.
- *
- * Notice the header being included, you *must* include the header for
- * the class you are modifying, or you will get a compile error.
- *
- * Another way you could do this is like this:
- *
- * struct MyMenuLayer : Modify<MyMenuLayer, MenuLayer> {};
- */
-#include <Geode/modify/MenuLayer.hpp>
-class $modify(MyMenuLayer, MenuLayer) {
-	/**
-	 * Typically classes in GD are initialized using the `init` function, (though not always!),
-	 * so here we use it to add our own button to the bottom menu.
-	 *
-	 * Note that for all hooks, your signature has to *match exactly*,
-	 * `void init()` would not place a hook!
-	*/
-	bool init() {
-		/**
-		 * We call the original init function so that the
-		 * original class is properly initialized.
-		 */
-		if (!MenuLayer::init()) {
-			return false;
-		}
+// gonna be using this a lot and I don't wanna type the whole thing out every time
+#define listenToSettingC(type, key, capture, alterValue) listenForSettingChanges<type>(key, [capture](type value) { *alterValue = value; } )
+#define listenToSetting(type, key, alterValue) listenForSettingChanges<type>(key, [](type value) { *alterValue = value; } )
 
-		/**
-		 * You can use methods from the `geode::log` namespace to log messages to the console,
-		 * being useful for debugging and such. See this page for more info about logging:
-		 * https://docs.geode-sdk.org/tutorials/logging
-		*/
-		log::debug("Hello from my MenuLayer::init hook! This layer has {} children.", this->getChildrenCount());
+// I really shouldn't be using global variables but I can't add fields to non-ccnode hooks, and it also won't let me add regular members, so I kinda have no choice
+bool speedChangeEnabled;
+bool speedChangeAudioOnly;
+float speedChangeFrequency;
+float speedChangeIntensity;
+float totalDelta = 0.0f;
+float currentSpeed = 0.0f;
+FMOD::ChannelGroup* masterChannel;
 
-		/**
-		 * See this page for more info about buttons
-		 * https://docs.geode-sdk.org/tutorials/buttons
-		*/
-		auto myButton = CCMenuItemSpriteExtra::create(
-			CCSprite::createWithSpriteFrameName("GJ_likeBtn_001.png"),
-			this,
-			/**
-			 * Here we use the name we set earlier for our modify class.
-			*/
-			menu_selector(MyMenuLayer::onMyButton)
-		);
+class $modify(DrunkCCScheduler, CCScheduler) {
+    void update(float dt) {
+        // get audio channel if it's not been obtained yet
+        if (!masterChannel) {
+            FMODAudioEngine::sharedEngine()->m_system->getMasterChannelGroup(&masterChannel);
+        }
 
-		/**
-		 * Here we access the `bottom-menu` node by its ID, and add our button to it.
-		 * Node IDs are a Geode feature, see this page for more info about it:
-		 * https://docs.geode-sdk.org/tutorials/nodetree
-		*/
-		auto menu = this->getChildByID("bottom-menu");
-		menu->addChild(myButton);
+        if (speedChangeEnabled) {
+            totalDelta += dt;
+            if (totalDelta >= speedChangeFrequency) {
+                // using srand and rand since we don't really need a secure or "good" random number generator
+                const auto val = static_cast<float>(std::rand())/static_cast<float>(RAND_MAX); // random number from 0 to 1
+                const auto mul = (val * (speedChangeIntensity * 2.0f)) - speedChangeIntensity; // get the number to be from (1 - intensity) to (1 + intensity)
+                currentSpeed = 1.0f - mul;
+                totalDelta = 0;
+            }
 
-		/**
-		 * The `_spr` string literal operator just prefixes the string with
-		 * your mod id followed by a slash. This is good practice for setting your own node ids.
-		*/
-		myButton->setID("my-button"_spr);
+            masterChannel->setPitch(currentSpeed);
+        } else {
+            masterChannel->setPitch(1.0f);
+        }
 
-		/**
-		 * We update the layout of the menu to ensure that our button is properly placed.
-		 * This is yet another Geode feature, see this page for more info about it:
-		 * https://docs.geode-sdk.org/tutorials/layouts
-		*/
-		menu->updateLayout();
-
-		/**
-		 * We return `true` to indicate that the class was properly initialized.
-		 */
-		return true;
-	}
-
-	/**
-	 * This is the callback function for the button we created earlier.
-	 * The signature for button callbacks must always be the same,
-	 * return type `void` and taking a `CCObject*`.
-	*/
-	void onMyButton(CCObject*) {
-		FLAlertLayer::create("Geode", "Hello from my custom mod!", "OK")->show();
-	}
+        // if speed change is disabled OR audio only is enabled, supply regular dt. otherwise, use the modified one
+        CCScheduler::update(
+            speedChangeEnabled ?
+            (speedChangeAudioOnly ? dt : dt * currentSpeed) : dt);
+    }
 };
+
+$on_mod(Loaded) {
+    std::srand(static_cast<unsigned int>(std::time(nullptr)));
+
+    speedChangeEnabled = Mod::get<>()->getSettingValue<bool>("hangover-enabled");
+    speedChangeAudioOnly = Mod::get<>()->getSettingValue<bool>("hangover-speedchange-audio-only");
+    speedChangeFrequency = Mod::get<>()->getSettingValue<float>("hangover-speedchange-frequency");
+    speedChangeIntensity = Mod::get<>()->getSettingValue<float>("hangover-speedchange-intensity");
+
+    listenToSetting(bool, "hangover-enabled", &speedChangeEnabled);
+    listenToSetting(bool, "hangover-speedchange-audio-only", &speedChangeAudioOnly);
+    listenToSetting(float, "hangover-speedchange-frequency", &speedChangeFrequency);
+    listenToSetting(float, "hangover-speedchange-intensity", &speedChangeIntensity);
+}
