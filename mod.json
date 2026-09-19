@@ -15,7 +15,7 @@
 		"source": "https://github.com/Amelintrus/Hangover"
 	},
 	"tags": [
-		"joke", "gameplay"
+		"joke", "gameplay", "offline"
 	],
 	"dependencies": {
 		"geode.node-ids": ">=v1.23.3"
