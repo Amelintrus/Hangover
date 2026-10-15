@@ -39,7 +39,7 @@
 			"enable-if": "hangover-enabled",
 			"name": "Level VFX",
 			"type": "bool",
-			"description": "Should there be visual effects while playing levels while drunk?",
+			"description": "Should there be visual effects while playing levels while drunk? (vfx are currently only visible in levels that use shader effects. levels that don't use shader effects will not have visible vfx)",
 			"default": true
 		},
 

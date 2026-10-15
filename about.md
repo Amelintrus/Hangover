@@ -5,7 +5,6 @@ Spiritual successor to my previous mod, Drunk Mode (which is now outdated)
 
 Check the mod config for settings on how drunk you want to get, and if you want it enabled or not.
 ## Roadmap (stuff I wanna add in the future)
-- funky visuals to go along with the speed/audio change while being drunk
 - a menu where you can go to a bar and take shots to steadily increase how drunk you are
     - also allow you to talk to some characters like the gatekeeper and demon guardian, where dialogue changes based on how drunk you are
 - if you're too drunk, you get a hangover that lasts like 10 minutes maybe
