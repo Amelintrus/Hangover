@@ -8,7 +8,7 @@
 	},
 	"id": "amelintrus.hangover",
 	"name": "Hangover",
-	"version": "v1.0.2",
+	"version": "v1.1.0",
 	"developer": "Amelintrus",
 	"description": "Experience alcoholism in Geometry Dash",
 	"links": {
@@ -24,20 +24,35 @@
 		"hangover-enabled": {
 			"name": "Enabled",
 			"type": "bool",
-			"description": "Get drunk?",
+			"description": "Enable or disable the entirety of Hangover",
 			"default": true
 		},
-		"hangover-settings-title": {
+
+		"hangover-speedchange-enabled": {
+			"enable-if": "hangover-enabled",
+			"name": "Speed Change",
+			"type": "bool",
+			"description": "Should game speed rapidly change while drunk?",
+			"default": true
+		},
+		"hangover-vfx-enabled": {
+			"enable-if": "hangover-enabled",
+			"name": "Level VFX",
+			"type": "bool",
+			"description": "Should there be visual effects while playing levels while drunk?",
+			"default": true
+		},
+
+		"hangover-speedchange-title": {
 			"type": "title",
 			"name": "Speed Change Settings",
 			"description": "Controls the speed-change effect from being drunk"
 		},
-
 		"hangover-speedchange-audio-only": {
 			"enable-if": "hangover-enabled",
 			"name": "Speed Change Audio Only",
 			"type": "bool",
-			"description": "Speed changing only modifies the audio, not the actual speed of the game. This will ruin any sync levels has.",
+			"description": "Speed changing only modifies the audio, not the actual speed of the game. This will ruin any sync levels have.",
 			"default": false
 		},
 		"hangover-speedchange-frequency": {
@@ -64,6 +79,30 @@
 			"control": {
 				"slider": true,
 				"input": true
+			}
+		},
+
+		"hangover-vfx-title": {
+			"type": "title",
+			"name": "VFX Settings",
+			"description": "Controls VFX that change visuals while playing levels"
+		},
+		"hangover-vfx-blur": {
+			"type": "bool",
+			"enable-if": "hangover-vfx-enabled",
+			"name": "Radial Blur",
+			"description": "Toggles the radial blur in VFX",
+			"default": true
+		},
+		"hangover-vfx-blur-intensity": {
+			"type": "float",
+			"enable-if": "hangover-vfx-blur",
+			"name": "Radial Blur Intensity",
+			"description": "Changes the intensity of the radial blur",
+			"default": 2,
+			"control": {
+				"arrow-step": 0.1,
+				"arrows": true
 			}
 		}
 	}
